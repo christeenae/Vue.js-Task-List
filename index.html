@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue.js Task List</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.3.4/dist/vue.global.prod.js"></script>
+</head>
+<body>
+    <div class="container" id="app">
+        <div class="box">
+            <h2>Vue.js Task List</h2>
+            <input type="text" placeholder="Add text here..." v-model="newTask" @keyup.enter="addItem" id="inputBx">
+            <ul id="list">
+                <li v-for="(task, index) in filteredTasks" :key="index" class="box-item">
+                    <label>
+                        <input type="checkbox" v-model="task.done">
+                        <span :class="{ done: task.done }">{{ task.text }}</span>
+                    </label>
+                    <i @click="removeItem(index)"></i>
+                </li>
+            </ul>
+            <div>
+                <label>Show:
+                    <select v-model="filterStatus">
+                        <option value="all">All</option>
+                        <option value="completed">Completed</option>
+                        <option value="incomplete">Incomplete</option>
+                    </select>
+                </label>
+            </div>
+            <p class="error" v-if="error">{{ error }}</p>
+        </div>
+        <div class="completed-tasks">
+            <h3>Completed Tasks</h3>
+            <ul>
+                <li v-for="(task, index) in completedTasks" :key="index">
+                    <span>{{ task.text }}</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    tasks: [],
+                    newTask: "",
+                    filterStatus: "all",
+                    error: "",
+                };
+            },
+            computed: {
+                filteredTasks() {
+                    if (this.filterStatus === "all") {
+                        return this.tasks;
+                    } else if (this.filterStatus === "completed") {
+                        return this.tasks.filter(task => task.done);
+                    } else if (this.filterStatus === "incomplete") {
+                        return this.tasks.filter(task => !task.done);
+                    }
+                },
+                completedTasks() {
+                    return this.tasks.filter(task => task.done);
+                },
+            },
+            methods: {
+                addItem() {
+                    if (this.newTask.trim() !== "") {
+                        this.tasks.push({ text: this.newTask, done: false });
+                        this.newTask = "";
+                        this.error = "";
+                    } else {
+                        this.error = "Task title cannot be empty!";
+                    }
+                },
+                toggleDone(index) {
+                   
+                },
+                removeItem(index) {
+                    this.tasks.splice(index, 1);
+                },
+            },
+        });
+
+        app.mount("#app");
+    </script>
+</body>
+</html>
